@@ -12,19 +12,19 @@ LangGraph 그래프의 노드(Node) 정의
 """
 
 import json
-import re
 from datetime import datetime
 from typing import Literal
+
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_upstage import ChatUpstage
 from loguru import logger
 from pydantic import BaseModel, Field
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_upstage import ChatUpstage
 
-from app.graph.state import LumiState
 from app.core.config import settings
-from app.core.prompts import ROUTER_PROMPT, RESPONSE_PROMPT, RAG_RESPONSE_PROMPT
-from app.tools.executor import ToolExecutor
+from app.core.prompts import RAG_RESPONSE_PROMPT, RESPONSE_PROMPT, ROUTER_PROMPT
+from app.graph.state import LumiState
 from app.repositories.rag import get_rag_repository
+from app.tools.executor import ToolExecutor
 
 
 class RouterOutput(BaseModel):
@@ -310,7 +310,7 @@ async def response_node(state: LumiState) -> dict:
     elif intent == "tool":
         # Tool 응답: Tool 실행 결과 포함
         tool_result = state["tool_result"]
-        tool_name = state["tool_name"]
+        # tool_name = state["tool_name"]
 
         # Tool 결과를 자연스러운 응답으로 변환하기 위한 컨텍스트
         result_context = f"""
@@ -354,7 +354,7 @@ async def response_node(state: LumiState) -> dict:
         response = await llm.ainvoke(messages)
         ai_response = response.content
 
-        logger.info(f"💬 [Response] 응답 생성 완료")
+        logger.info("💬 [Response] 응답 생성 완료")
 
     except Exception as e:
         logger.error(f"응답 생성 오류: {e}")

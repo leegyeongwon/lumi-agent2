@@ -133,6 +133,7 @@ async def embed_chunks(chunks: list[str]) -> list[list[float]]:
         list[list[float]]: 임베딩 벡터 목록
     """
     from langchain_upstage import UpstageEmbeddings
+
     from app.core.config import settings
 
     if not settings.upstage_api_key:
@@ -161,6 +162,7 @@ async def truncate_documents() -> int:
         int: 삭제된 레코드 수
     """
     from supabase import create_client
+
     from app.core.config import settings
 
     if not settings.supabase_url or not settings.supabase_key:
@@ -199,6 +201,7 @@ async def save_to_supabase(
         int: 저장된 레코드 수
     """
     from supabase import create_client
+
     from app.core.config import settings
 
     if not settings.supabase_url or not settings.supabase_key:
