@@ -9,7 +9,7 @@ Production 환경에서 필수적인 헬스체크 API입니다.
     GET /health/ready    - 준비 상태 확인 (DB 연결 등)
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import APIRouter
 
