@@ -212,7 +212,7 @@ async def save_to_supabase(
     logger.info("Supabase에 저장 시작...")
 
     saved_count = 0
-    for i, (chunk, vector) in enumerate(zip(chunks, vectors)):
+    for i, (chunk, vector) in enumerate(zip(chunks, vectors, strict=False)):
         try:
             # 각 청크별 메타데이터 (원본 + 청크 인덱스)
             chunk_metadata = {
@@ -221,7 +221,7 @@ async def save_to_supabase(
                 "chunk_total": len(chunks)
             }
 
-            result = client.table("documents").insert({
+            client.table("documents").insert({
                 "content": chunk,
                 "embedding": vector,
                 "metadata": chunk_metadata
