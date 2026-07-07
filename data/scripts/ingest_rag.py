@@ -221,6 +221,7 @@ async def save_to_supabase(
                 "chunk_total": len(chunks)
             }
 
+            
             client.table("documents").insert({
                 "content": chunk,
                 "embedding": vector,
