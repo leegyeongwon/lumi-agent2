@@ -15,7 +15,6 @@
 #   - SUPABASE_KEY: Supabase API 키
 
 name: Lumi Agent CI
-
 on:
   push:
     branches: [main]
