@@ -66,7 +66,7 @@ def extract_metadata(content: str) -> dict:
     Returns:
         dict: 추출된 메타데이터 (없으면 기본값)
     """
-    pattern = r'RAG_METADATA:\s*(\{[\s\S]*?\})\s*-->'
+    pattern = r"RAG_METADATA:\s*(\{[\s\S]*?\})\s*-->"
     match = re.search(pattern, content)
 
     if match:
@@ -81,11 +81,13 @@ def extract_metadata(content: str) -> dict:
     return {
         "version": "unknown",
         "status": "active",
-        "document_type": "character_profile"
+        "document_type": "character_profile",
     }
 
 
-def chunk_document(content: str, chunk_size: int = 500, chunk_overlap: int = 50) -> list[str]:
+def chunk_document(
+    content: str, chunk_size: int = 500, chunk_overlap: int = 50
+) -> list[str]:
     """
     문서를 청크 단위로 분할합니다.
 
@@ -106,12 +108,12 @@ def chunk_document(content: str, chunk_size: int = 500, chunk_overlap: int = 50)
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         separators=[
-            "\n## ",      # H2 헤더
-            "\n### ",     # H3 헤더
-            "\n#### ",    # H4 헤더
-            "\n\n",       # 빈 줄
-            "\n",         # 줄바꿈
-            " ",          # 공백
+            "\n## ",  # H2 헤더
+            "\n### ",  # H3 헤더
+            "\n#### ",  # H4 헤더
+            "\n\n",  # 빈 줄
+            "\n",  # 줄바꿈
+            " ",  # 공백
         ],
         length_function=len,
     )
@@ -141,7 +143,7 @@ async def embed_chunks(chunks: list[str]) -> list[list[float]]:
 
     embeddings = UpstageEmbeddings(
         api_key=settings.upstage_api_key,
-        model="solar-embedding-1-large-passage"  # 4096차원
+        model="solar-embedding-1-large-passage",  # 4096차원
     )
 
     logger.info(f"{len(chunks)}개 청크 임베딩 시작...")
@@ -185,9 +187,7 @@ async def truncate_documents() -> int:
 
 
 async def save_to_supabase(
-    chunks: list[str],
-    vectors: list[list[float]],
-    metadata: dict
+    chunks: list[str], vectors: list[list[float]], metadata: dict
 ) -> int:
     """
     청크와 벡터를 Supabase에 저장합니다.
@@ -215,18 +215,11 @@ async def save_to_supabase(
     for i, (chunk, vector) in enumerate(zip(chunks, vectors, strict=False)):
         try:
             # 각 청크별 메타데이터 (원본 + 청크 인덱스)
-            chunk_metadata = {
-                **metadata,
-                "chunk_index": i,
-                "chunk_total": len(chunks)
-            }
+            chunk_metadata = {**metadata, "chunk_index": i, "chunk_total": len(chunks)}
 
-
-            client.table("documents").insert({
-                "content": chunk,
-                "embedding": vector,
-                "metadata": chunk_metadata
-            }).execute()
+            client.table("documents").insert(
+                {"content": chunk, "embedding": vector, "metadata": chunk_metadata}
+            ).execute()
 
             saved_count += 1
 
@@ -277,7 +270,7 @@ async def ingest_document(file_path: str) -> dict:
         "file": path.name,
         "chunks": len(chunks),
         "saved": saved_count,
-        "metadata": metadata
+        "metadata": metadata,
     }
 
 
@@ -301,12 +294,12 @@ def parse_args():
 Distractor 설명:
   v1.0 (deprecated)은 RAG 메타데이터 필터링 시연용 "방해 문서"입니다.
   2강에서 필터링 유무에 따른 검색 결과 차이를 시연할 때 사용합니다.
-        """
+        """,
     )
     parser.add_argument(
         "--active-only",
         action="store_true",
-        help="v2.5 (active) 문서만 적재 (Distractor 제외)"
+        help="v2.5 (active) 문서만 적재 (Distractor 제외)",
     )
     return parser.parse_args()
 
@@ -373,15 +366,21 @@ async def main():
             # 메타데이터 검증
             actual_status = result["metadata"].get("status", "unknown")
             if actual_status != expected_status:
-                logger.warning(f"⚠️ 메타데이터 불일치: 예상={expected_status}, 실제={actual_status}")
+                logger.warning(
+                    f"⚠️ 메타데이터 불일치: 예상={expected_status}, 실제={actual_status}"
+                )
 
         # 최종 결과
         logger.info("\n" + "=" * 60)
         logger.info("Ingestion 결과 요약")
         logger.info("=" * 60)
         for result in results:
-            status_emoji = "✅" if result["metadata"].get("status") == "active" else "📦"
-            logger.info(f"{status_emoji} {result['file']}: {result['saved']}/{result['chunks']} 청크")
+            status_emoji = (
+                "✅" if result["metadata"].get("status") == "active" else "📦"
+            )
+            logger.info(
+                f"{status_emoji} {result['file']}: {result['saved']}/{result['chunks']} 청크"
+            )
         logger.info("-" * 40)
         logger.info(f"총 청크: {total_chunks}개, 저장: {total_saved}개")
         logger.info("=" * 60)
@@ -397,6 +396,7 @@ async def main():
     except Exception as e:
         logger.error(f"Ingestion 실패: {e}")
         import traceback
+
         traceback.print_exc()
 
 

@@ -57,7 +57,7 @@ def get_llm() -> ChatUpstage:
         api_key=settings.upstage_api_key,
         model=settings.llm_model,
         timeout=30,
-        max_retries=2
+        max_retries=2,
     )
 
 
@@ -137,8 +137,12 @@ async def router_node(state: LumiState) -> dict:
                     tool_name = tool_name.split("?")[0].strip()
 
         # 유효한 tool 목록
-        valid_tools = ["get_schedule", "send_fan_letter", "recommend_song",
-                       "get_weather"]
+        valid_tools = [
+            "get_schedule",
+            "send_fan_letter",
+            "recommend_song",
+            "get_weather",
+        ]
 
         # intent가 tool인데 tool_name이 없거나 유효하지 않으면 chat으로 전환
         result_intent = result.intent
@@ -201,7 +205,7 @@ async def rag_node(state: LumiState) -> dict:
         docs = await rag_repo.search_similar(
             query=user_input,
             k=3,
-            filter_status="active"  # v2.5만 검색!
+            filter_status="active",  # v2.5만 검색!
         )
 
         # 검색 결과에서 content만 추출
@@ -211,7 +215,9 @@ async def rag_node(state: LumiState) -> dict:
         for i, doc in enumerate(docs):
             version = doc.get("metadata", {}).get("version", "?")
             similarity = doc.get("similarity", 0)
-            logger.debug(f"  [{i+1}] v{version} (sim: {similarity:.3f}): {doc['content'][:50]}...")
+            logger.debug(
+                f"  [{i + 1}] v{version} (sim: {similarity:.3f}): {doc['content'][:50]}..."
+            )
 
         logger.info(f"📚 [RAG] 검색 완료: {len(retrieved_docs)}개 문서")
 

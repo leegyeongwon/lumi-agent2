@@ -33,6 +33,7 @@ def get_supabase_client():
     if _supabase_client is None and settings.supabase_url and settings.supabase_key:
         try:
             from supabase import create_client
+
             _supabase_client = create_client(
                 settings.supabase_url,
                 settings.supabase_key,

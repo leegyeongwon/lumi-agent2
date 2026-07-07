@@ -18,6 +18,7 @@ from app.core.config import settings
 # TODO 1: APIRouter 인스턴스 생성
 router = APIRouter()
 
+
 # TODO 2: 헬스체크 엔드포인트 구현
 @router.get("/")
 async def health_check() -> dict:
